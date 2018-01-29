@@ -18,26 +18,28 @@ library(RSiteCatalyst)
 library(qcc)
 library(stats)
 library(scales)
+library(curl)
+library(httr)
 ```
 
 ```{r, echo= FALSE, message=FALSE, warning=FALSE}
 
-ATUS_Comp <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_Comp_DailyTimeSpent.csv?token=AOo_XxdXnFZlsWvWPyiuWVFsd_p7cjbQks5aZ9HLwA%3D%3D"
+ATUS_Comp <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_Comp_DailyTimeSpent.csv?token=AOo_X4RAzV_KGYWq5-m0yGVFKddFfqb1ks5achYFwA%3D%3D"
 ATUS_Compdf<-read.csv(ATUS_Comp, header = TRUE, sep = ",")
 
-ATUS_TV_All <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_DailyTimeSpent.csv?token=AOo_X6v9z7N63xDntI8Q9anhzUulFGN2ks5aZ9ORwA%3D%3D"
+ATUS_TV_All <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_DailyTimeSpent.csv?token=AOo_XzUU5fvxwFvsh8PeaOOo_up_YaNJks5achY5wA%3D%3D"
 ATUS_TV_Alldf<-read.csv(ATUS_TV_All, header = TRUE, sep = ",")
 
-ATUS_TV_wkday <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_DailyTimeSpent_WkDay.csv?token=AOo_X14ABOyKAEe3iJV0ppVniiA_kyOfks5aZ9OnwA%3D%3D"
+ATUS_TV_wkday <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_DailyTimeSpent_WkDay.csv?token=AOo_X6CK5CzIlKQftTGY1UB93VAareEwks5achZTwA%3D%3D"
 ATUS_TV_wkdaydf<-read.csv(ATUS_TV_wkday, header = TRUE, sep = ",")
 
-Nielsen_Video <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_Nielsen.csv?token=AOo_XwNdmw61moe3j3Ddv7XXV-xAICMfks5aZ9RBwA%3D%3D"
+Nielsen_Video <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/All_TV_Nielsen.csv?token=AOo_X310Ui0R65RTZwwHhLWS1sBzmRNXks5achZswA%3D%3D"
 Nielsen_videodf<-read.csv(Nielsen_Video, header = TRUE, sep = ",")
 
-Tokyo_Video<- "https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/Tokyo_TV_Viewing.csv?token=AOo_X7bizZ5C2FyQ1PLKr6w9lDH4YIqxks5aa2bhwA%3D%3D"
+Tokyo_Video<- "https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/Tokyo_TV_Viewing.csv?token=AOo_XwHpLuqa2WXvAYS1SSNRJEIAwU-Cks5achaDwA%3D%3D"
 Tokyo_videodf<-read.csv(Tokyo_Video, header = TRUE, sep = ",")
 
-Nielsen_Live <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/Live_TV_Nielsen.csv?token=AOo_X9Zwv40Ac9JJcPZOKC34qnIIBNRqks5ab1QqwA%3D%3D"
+Nielsen_Live <-"https://raw.githubusercontent.com/Misterresearch/NBCUBridge/master/Live_TV_Nielsen.csv?token=AOo_X6-xMoqJJ55QOqMauWKUvJ_kSX3Bks5achaUwA%3D%3D"
 
 Nielsen_Livedf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
 
@@ -48,17 +50,17 @@ Nielsen_Livedf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 summary(ATUS_Compdf$Estimate)
-hist(ATUS_Compdf$Estimate)
+hist(ATUS_Compdf$Estimate, col = "blue")
 summary(ATUS_TV_Alldf$Estimate)
-hist(ATUS_TV_Alldf$Estimate)
+hist(ATUS_TV_Alldf$Estimate, col = "green")
 summary(ATUS_TV_wkdaydf$Estimate)
-hist(ATUS_TV_wkdaydf$Estimate)
+hist(ATUS_TV_wkdaydf$Estimate, col = "red")
 summary(Nielsen_videodf$Audience)
-hist(Nielsen_videodf$Audience)
+hist(Nielsen_videodf$Audience, col = "black")
 summary(Nielsen_Livedf$Audience)
-hist(Nielsen_Livedf$Audience)
+hist(Nielsen_Livedf$Audience, col = "yellow")
 summary(Tokyo_videodf$Estimate)
-hist(Tokyo_videodf$Estimate)
+hist(Tokyo_videodf$Estimate, col = "brown")
 
 
 predictcomp<- predict(lm(Estimate ~ Year, data = ATUS_Compdf))
@@ -110,7 +112,8 @@ summary(lm(Estimate ~ Year, data = Tokyo_videodf))
 **Internal Video Retention Analysis**
 
 ```{r}
-#SCAuth("casenaveb:NBC Universal", "da0b832c8f5540f31ba2291266dafb72")
 
+set_config(use_proxy(url="proxy.inbcu.com",port=8080))
+SCAuth("casenaveb:NBC Universal", "da0b832c8f5540f31ba2291266dafb72")
 
 ```
