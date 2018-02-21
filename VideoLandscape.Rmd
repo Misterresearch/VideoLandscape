@@ -1,0 +1,142 @@
+---
+title: "Video Landscape ATUS, Nielsen & Hakuhodo"
+author: "NBCU Digital Measurement - Blandon C"
+date: "January 16, 2018"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tseries)
+library(stats)
+library(RSiteCatalyst)
+library(qcc)
+library(stats)
+library(scales)
+library(curl)
+library(httr)
+```
+
+```{r, echo= FALSE, message=FALSE, warning=FALSE}
+
+ATUS_Comp <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/All_Comp_DailyTimeSpent.csv"
+ATUS_Compdf<-read.csv(ATUS_Comp, header = TRUE, sep = ",")
+
+ATUS_TV_All <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/All_TV_DailyTimeSpent.csv"
+ATUS_TV_Alldf<-read.csv(ATUS_TV_All, header = TRUE, sep = ",")
+
+ATUS_TV_wkday <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/All_TV_DailyTimeSpent_WkDay.csv"
+ATUS_TV_wkdaydf<-read.csv(ATUS_TV_wkday, header = TRUE, sep = ",")
+
+Nielsen_Video <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/All_TV_Nielsen.csv"
+Nielsen_videodf<-read.csv(Nielsen_Video, header = TRUE, sep = ",")
+
+Tokyo_Video<- "https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/Tokyo_TV_Viewing.csv"
+Tokyo_videodf<-read.csv(Tokyo_Video, header = TRUE, sep = ",")
+
+Nielsen_Live <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/Live_TV_Nielsen.csv"
+
+Nielsen_Livedf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
+
+TV_Comp_Corr <-"https://raw.githubusercontent.com/Misterresearch/VideoLandscape/master/TV_Comp_Correlation.csv"
+
+TV_Comp_Corrdf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
+
+```
+
+**ATUS, Nielsen & Hakuhodo**
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+predictcomp<- predict(lm(Estimate ~ Year, data = ATUS_Compdf))
+
+ggplot(ATUS_Compdf, aes(x = Year, y = Estimate)) + geom_point(color="blue")+scale_x_continuous(breaks = ATUS_Compdf$Year)+ 
+geom_line(aes(y = predictcomp))+ylim(0,.5)+ggtitle("ATUS Avg Daily Hours on a Computer")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.5)
+summary(lm(Estimate ~ Year, data = ATUS_Compdf))
+
+predictvideo<- predict(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
+
+ggplot(ATUS_TV_Alldf, aes(x = Year, y = Estimate)) + geom_point(color="green")+scale_x_continuous(breaks = ATUS_TV_Alldf$Year)+ 
+geom_line(aes(y = predictvideo))+ylim(0,5)+ggtitle("ATUS Avg Daily Hours TV 7 days")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
+summary(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
+
+predictvideowkdy<- predict(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
+
+ggplot(ATUS_TV_wkdaydf, aes(x = Year, y = Estimate)) + geom_point(color="red")+scale_x_continuous(breaks = ATUS_TV_wkdaydf$Year)+ 
+geom_line(aes(y = predictvideowkdy))+ylim(0,5)+ggtitle("ATUS Avg Daily Hours TV Weekdays")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
+summary(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
+
+predictnielsen<- predict(lm(Audience ~ Year, data = Nielsen_videodf))
+
+ggplot(Nielsen_videodf, aes(x = Year, y = Audience)) + geom_point(color="black")+scale_x_continuous(breaks = Nielsen_videodf$Year)+ 
+  geom_line(aes(y = predictnielsen))+ylim(0,1000000)+ggtitle("Nielsen + PivotalAvg Audience X-Platform 
+TV & Online Estimate")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience)), position = position_dodge(.2), size=3, vjust=-.75)
+#log transformed
+summary(lm(log(Audience) ~ Year, data = Nielsen_videodf))
+
+
+predictnielsenlive<- predict(lm(Audience ~ Year, data = Nielsen_Livedf))
+
+ggplot(Nielsen_Livedf, aes(x = Year, y = Audience)) + geom_point(color="yellow")+scale_x_continuous(breaks = Nielsen_Livedf$Year)+ 
+geom_line(aes(y = predictnielsenlive))+ylim(0,1000000)+ggtitle("Nielsen + Pivotal Avg Audience Live TV & Online Estimate")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience)), position = position_dodge(.2), size=3, vjust=-.75)
+#log transformed
+summary(lm(log(Audience) ~ Year, data = Nielsen_Livedf))
+
+predicttokyo<- predict(lm(Estimate ~ Year, data = Tokyo_videodf))
+
+ggplot(Tokyo_videodf, aes(x = Year, y = Estimate)) + geom_point(color="brown")+scale_x_continuous(breaks = Tokyo_videodf$Year)+ 
+geom_line(aes(y = predicttokyo))+ylim(0,5)+ggtitle("Hakuhodo - Tokyo Avg Daily Hours TV")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
+summary(lm(Estimate ~ Year, data = Tokyo_videodf))
+```
+
+** Forecasted Video Usage**
+```{r,}
+
+```
+
+
+**Internal Video Retention Analysis**
+
+```{r}
+
+#set_config(use_proxy(url="proxy.inbcu.com",port=8080))
+SCAuth("casenaveb:NBC Universal", "da0b832c8f5540f31ba2291266dafb72")
+
+```
+
+**Appendix - Data Distribution**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+summary(ATUS_Compdf$Estimate)
+summary(ATUS_TV_Alldf$Estimate)
+summary(ATUS_TV_wkdaydf$Estimate)
+summary(Nielsen_videodf$Audience)
+summary(Nielsen_Livedf$Audience)
+summary(Tokyo_videodf$Estimate)
+
+
+par(mfrow=c(3,2))
+
+hist(ATUS_Compdf$Estimate, col = "blue")
+hist(ATUS_TV_Alldf$Estimate, col = "green")
+hist(ATUS_TV_wkdaydf$Estimate, col = "red")
+hist(Nielsen_videodf$Audience, col = "black")
+hist(Nielsen_Livedf$Audience, col = "yellow")
+hist(Tokyo_videodf$Estimate, col = "brown")
+
+par(mfrow=c(3,2))
+qqnorm(ATUS_Compdf$Estimate, col = "blue")
+qqnorm(ATUS_TV_Alldf$Estimate, col = "green")
+qqnorm(ATUS_TV_wkdaydf$Estimate, col = "red")
+qqnorm(Nielsen_videodf$Audience, col = "black")
+qqnorm(Nielsen_Livedf$Audience, col = "yellow")
+qqnorm(Tokyo_videodf$Estimate, col = "brown")
+```
