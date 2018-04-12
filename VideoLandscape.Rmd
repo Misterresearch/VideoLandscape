@@ -90,7 +90,7 @@ The data and information we've explored in this analysis infers that the bulk of
 
 Our analysis utilizes secondary research from the U.S Bureau of Labor Statistic's American Time Usage Survey, Nielsen/Pivotal Research custom research and for comparative analysis -  Tokyo based survey data conducted by the Hakuhodo research firm. 
 
-Fundamentally, video content makers are still competing among themselves, and not with application makers for engagement. We're also able to see, that viewing video programming on a TV screen is alive and well. Further, Netflix, reports that despite new users signing up on phones and laptops, 70% of viewing occurs on a connected TV[^1]. 
+Fundamentally, video content makers are still competing among themselves, and not with application makers for engagement. We're also able to see, that viewing video programming on a TV screen is alive and well. Further, Netflix reports that despite new users signing up on phones and laptops, 70% of viewing occurs on a connected TV[^1]. 
 
 It's also important to know that sometimes OTT providers can get it wrong. An example is Hulu Japan, which flopped because it had content that wasn't relevant to its market, at very high price point ($19.25/per month) [^2]. 
 In 2014, Hulu Japan was sold to Nippon TV, which was able to expand its catalog with local content, and lower the price to (900 Yen/$8.50)[^3].
@@ -172,7 +172,7 @@ ATUS Data Source:[^6]
 
 \hfill\break
 
-According to the ATUS survey, respondents report watching TV on any platform, all days of the week, for 2.51 hours per day.  
+According to the ATUS survey, respondents report watching TV on any platform, on weekdays, for 2.51 hours per day.  
 
 The regression shows that viewing on any platform has been growing at 49 seconds per year from 2003-2016 on average, and is statistically significant at 95% confidence interval. See output below: 
 
@@ -398,11 +398,11 @@ The primary goals of our analysis, was to answer two questions:
 * Has overall video usage been increasing or decreasing  
 * Will people be spending more time with non-video activity at the expense of video usage.  
 
-The problem in answering the first question is that there's no single source of truth. Therefore, we broke our analysis into two parts - first to determine what our sources were predicting for video usage, by type (Live TV vs Cross-Platform). Once we established which sources were aimed at measuring the same phenomena, albeit with different methods the next step was to determine if they correlated together - essentially telling the same story.  
+The problem in answering the first question is that there's no single source of truth. Therefore, we broke our analysis into two parts - first to determine what our sources were predicting for video usage, by type (Live TV vs Cross-Platform). Once we established which sources were aimed at measuring the same phenomena, albeit with different methods, the next step was to determine if they correlated together - essentially telling the same story.  
 
 As we saw in our correlation section, generally this was the case. Finally, once we determined with some statistical confidence that trends were either decreasing or increasing, the next step was to try and provide five-year forecasts for our key behaviors of interest - overall computer usage (excl. games), ATUS reporting all TV viewing and Nielsen + Pivotal Research Cross-platform TV viewing. 
 
-The ATUS survey based date reported computer usage and cross-platform TV usage trending up, but predicted means were more that one standard deviation from the observed means, limiting our confidence in the exact predictions - but not the direction. However, our predicted values from Nielsen/Pivotal research for average audience viewing of cross-platform viewing was within one standard deviation of the actual or observed values, confirming the validity of those predicted values. 
+The ATUS survey based date reported computer usage and cross-platform TV usage trending up, but predicted means were more than one standard deviation from the observed means, limiting our confidence in the exact predictions - but not the direction. However, our predicted values from Nielsen/Pivotal research for average audience viewing of cross-platform viewing was within one standard deviation of the actual or observed values, confirming the validity of those predicted values. 
 
 In the sum, all sources point to continuing declines in live TV viewing, but continued growth when looking at cross-platform growth. It's also worth noting that the growth of cross-platform TV viewing is not negatively correlated with non-video online activity. 
 </div>
