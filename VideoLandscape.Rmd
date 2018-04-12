@@ -1,19 +1,43 @@
 ---
-title: "Video Landscape ATUS, Nielsen & Hakuhodo"
-author: "NBCU Digital Measurement - Blandon C"
-date: "January 16, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+<style type="text/css">
+h1.title {
+  color: #000080;
+  font-size: 32px;
+}
+h2 {
+  color: #008000;
+  font-size: 22px;
+}
+h3 {
+  font-size: 16px;
+}
+body p{
+  color: #000080;
+}
+</style>
+---
+title: "Video All-Platform Consumption Trends - ATUS, Nielsen & Hakuhodo"
+author: "NBCU Corporate Digital Measurement Strategy"
+date: "April 13, 2018"
 output:
   html_document: default
   pdf_document: default
   word_document: default
+  header-includes:
+    - \usepackage{color}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
+library(Rmisc)
 library(dplyr)
 library(tseries)
 library(stats)
@@ -23,6 +47,11 @@ library(stats)
 library(scales)
 library(curl)
 library(httr)
+library(showtext)
+library(formattable)
+library(segmented)
+library(prophet)
+library(formattable)
 ```
 
 ```{r, echo= FALSE, message=FALSE, warning=FALSE}
@@ -52,67 +81,340 @@ TV_Comp_Corrdf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
 
 ```
 
-**ATUS, Nielsen & Hakuhodo**
+<div style="margin-bottom:50px;">
+## EXECUTIVE SUMMARY
 
+As traditional TV viewing declines, the natural questions to ask are...where are viewers going and what are they doing? Unfortunately, these very simple questions have many answers depending on who you ask. Of critical concern to long-form video programmers is whether or not there's still an opportunity to capture viewers' attention. The business question is presented in this way..."even if we perfectly execute video content, if there's no opportunity...then what difference does it make?".
+
+The data and information we've explored in this analysis infers that the bulk of the decline in live TV video usage is transferring over to video consumption on other platforms - as opposed to other non-video forms of online activity. The data further shows, that more time allocated to online usage does not detract from cross-platform video consumption.
+
+Our analysis utilizes secondary research from the U.S Bureau of Labor Statistic's American Time Usage Survey, Nielsen/Pivotal Research custom research and for comparative analysis -  Tokyo based survey data conducted by the Hakuhodo research firm. 
+
+Fundamentally, video content makers are still competing among themselves, and not with application makers for engagement. We're also able to see, that viewing video programming on a TV screen is alive and well. Further, Netflix, reports that despite new users signing up on phones and laptops, 70% of viewing occurs on a connected TV[^1]. 
+
+It's also important to know that sometimes OTT providers can get it wrong. An example is Hulu Japan, which flopped because it had content that wasn't relevant to its market, at very high price point ($19.25/per month) [^2]. 
+In 2014, Hulu Japan was sold to Nippon TV, which was able to expand its catalog with local content, and lower the price to (900 Yen/$8.50)[^3].
+
+Today, in the US market, it's cheaper to channel surf on OTT SVOD than cable TV - representing an opportunity for some, and new challenges for others. Technology itself isn't the driver, it appears to be content and price. Technology has been a facilitator of competition, but itself is not the draw.
+</div>
+
+<div style="margin-bottom:50px;">
+## METHODOLOGY & DATA SOURCES: ATUS, Nielsen & Hakuhodo
+
+The American Time Usage Survey (ATUS) is a very high-level report, that doesn't distinguish between video viewing platforms. ATUS's TV usage survey question covers what is essentially viewing long-form "TV" content on any platform. The same principle applies to the computer usage question, it applies to mobile and desktop, excluding gaming activity. ATUS survey data gives us a trended look from 2003-2016. There are a total of three charts in our analysis from this data source.
+
+Nielsen and Pivotal research have created custom average audience delivery for cross-platform TV viewing, along with traditional live ratings as well. The date range for this study is from 2008-2016. There are a total two charts in our analysis from this data set. 
+
+Finally, for the purposes of a comparative analysis, we'll look at survey data from the Hakuhodo research firm. Hakuhodo's survey also asks about TV viewing, but it is confined to live TV.
+</div>
+\newpage
+
+<div style="margin-bottom:50px;">
+## DATA EXPLORATION & ANALYSIS
+</div>
+  
+
+<div style="margin-bottom:100px;">
 ```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predictcomp<- predict(lm(Estimate ~ Year, data = ATUS_Compdf))
 
 ggplot(ATUS_Compdf, aes(x = Year, y = Estimate)) + geom_point(color="blue")+scale_x_continuous(breaks = ATUS_Compdf$Year)+ 
-geom_line(aes(y = predictcomp))+ylim(0,.5)+ggtitle("ATUS Avg Daily Hours on a Computer")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.5)
-summary(lm(Estimate ~ Year, data = ATUS_Compdf))
+geom_line(aes(y = predictcomp))+ylim(0,.5)+ggtitle("ATUS - Series Title: Avg hrs per day - Computer use for leisure")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.5)
+```
+  
+ATUS Data Source:[^4]  
 
+According to the ATUS survey, respondents report online usage on any device, besides gaming, for .17 hours per day. Although there is a peak starting in 2011, that seems to decline starting in 2015, making the overall trend flat. BLS confirmed that this usage includes mobile usage of social media.  
+
+The regression shows zero growth per year, and is statistically significant at 99% confidence interval. See output below:  
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+summary(ATUS_Compdf$Estimate)
+summary(lm(Estimate ~ Year, data = ATUS_Compdf))
+```
+</div>
+
+ 
+<div style="margin-bottom:100px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predictvideo<- predict(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
 
 ggplot(ATUS_TV_Alldf, aes(x = Year, y = Estimate)) + geom_point(color="green")+scale_x_continuous(breaks = ATUS_TV_Alldf$Year)+ 
-geom_line(aes(y = predictvideo))+ylim(0,5)+ggtitle("ATUS Avg Daily Hours TV 7 days")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
-summary(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
+geom_line(aes(y = predictvideo))+ylim(0,5)+ggtitle("ATUS - Series Title: Avg hrs per day - Watching TV ")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+```
+  
+ATUS Data Source:[^5]  
 
+\hfill\break
+According to the ATUS survey, respondents report watching TV on any platform, all days of the week, for 2.72 hours per day.  
+
+The regression shows that viewing on any platform has been growing at 1 minute per year from 2003-2016 on average, and is statistically significant at 99% confidence interval. See output below: 
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+summary(ATUS_TV_Alldf$Estimate)
+summary(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
+```
+</div>
+
+
+  
+<div style="margin-bottom:100px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predictvideowkdy<- predict(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
 
 ggplot(ATUS_TV_wkdaydf, aes(x = Year, y = Estimate)) + geom_point(color="red")+scale_x_continuous(breaks = ATUS_TV_wkdaydf$Year)+ 
-geom_line(aes(y = predictvideowkdy))+ylim(0,5)+ggtitle("ATUS Avg Daily Hours TV Weekdays")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
-summary(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
+geom_line(aes(y = predictvideowkdy))+ylim(0,5)+ggtitle("ATUS -Series Title: Avg hrs per day - Watching TV, Weekdays")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+```
+  
+    
+ATUS Data Source:[^6]  
 
+
+\hfill\break
+
+According to the ATUS survey, respondents report watching TV on any platform, all days of the week, for 2.51 hours per day.  
+
+The regression shows that viewing on any platform has been growing at 49 seconds per year from 2003-2016 on average, and is statistically significant at 95% confidence interval. See output below: 
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+summary(ATUS_TV_wkdaydf$Estimate)
+summary(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
+```
+</div>
+
+
+<div style="margin-bottom:100px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predictnielsen<- predict(lm(Audience ~ Year, data = Nielsen_videodf))
 
-ggplot(Nielsen_videodf, aes(x = Year, y = Audience)) + geom_point(color="black")+scale_x_continuous(breaks = Nielsen_videodf$Year)+ 
-  geom_line(aes(y = predictnielsen))+ylim(0,1000000)+ggtitle("Nielsen + PivotalAvg Audience X-Platform 
-TV & Online Estimate")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience)), position = position_dodge(.2), size=3, vjust=-.75)
+ggplot(Nielsen_videodf, aes(x = Year, y = Audience)) + geom_point(color="black")+scale_x_continuous(breaks = Nielsen_videodf$Year)+ geom_line(aes(y = predictnielsen))+ylim(0,1000000)+ggtitle("Nielsen + PivotalAvg Audience X-Platform TV & Online Estimate")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience, digits=0)), position = position_dodge(.2), size=3, vjust=-.75)
+```
+\hfill\break
+
+Nielsen + Pivotal research's average audience estimate for cross-platform TV viewing is 546,000 spanning 2008-2016. The log-transformed regression model, enables percentage based reporting and shows on average a 1% increase per year, at a 100% confidence interval.   
+
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 #log transformed
+summary(Nielsen_videodf$Audience)
 summary(lm(log(Audience) ~ Year, data = Nielsen_videodf))
+```
+</div>
 
 
+<div style="margin-bottom:100px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predictnielsenlive<- predict(lm(Audience ~ Year, data = Nielsen_Livedf))
 
 ggplot(Nielsen_Livedf, aes(x = Year, y = Audience)) + geom_point(color="yellow")+scale_x_continuous(breaks = Nielsen_Livedf$Year)+ 
-geom_line(aes(y = predictnielsenlive))+ylim(0,1000000)+ggtitle("Nielsen + Pivotal Avg Audience Live TV & Online Estimate")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience)), position = position_dodge(.2), size=3, vjust=-.75)
-#log transformed
-summary(lm(log(Audience) ~ Year, data = Nielsen_Livedf))
+geom_line(aes(y = predictnielsenlive))+ylim(0,1000000)+ggtitle("Nielsen + Pivotal Avg Audience Live TV & Online Estimate")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience,digits=0)), position = position_dodge(.2), size=3, vjust=-.75)
+```
+\hfill\break
 
+Nielsen average audience estimate for Live TV viewing is 465,900 spanning 2008-2016.  
+
+The log-transformed regression model, enables percentage based reporting and shows a -1% decrease per year in audience on average, at a 99% confidence interval.  
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+#log transformed
+summary(Nielsen_Livedf$Audience)
+summary(lm(log(Audience) ~ Year, data = Nielsen_Livedf))
+```
+</div> 
+
+
+<div style="margin-bottom:100px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 predicttokyo<- predict(lm(Estimate ~ Year, data = Tokyo_videodf))
 
 ggplot(Tokyo_videodf, aes(x = Year, y = Estimate)) + geom_point(color="brown")+scale_x_continuous(breaks = Tokyo_videodf$Year)+ 
-geom_line(aes(y = predicttokyo))+ylim(0,5)+ggtitle("Hakuhodo - Tokyo Avg Daily Hours TV")+theme(plot.title = element_text(family = "Calibri", color="#666666", face="bold", size = 14, hjust = 0))+geom_text(aes(label=Estimate), position = position_dodge(.2), size=3, vjust=-.75)
+geom_line(aes(y = predicttokyo))+ylim(0,5)+ggtitle("Hakuhodo - Tokyo Avg Daily Hours TV")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+```
+\hfill\break
+
+According to the Hakuhodo survey, respondents report watching live TV, for 2.67 hours per day. 
+
+The regression shows that viewing on any platform has been decreasing by 1 minute and 48 seconds per year from 2006-2017 on average,and is statistically significant at 100% confidence interval.  
+
+See regression output below: 
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+summary(Tokyo_videodf$Estimate)
 summary(lm(Estimate ~ Year, data = Tokyo_videodf))
 ```
+</div>
 
-** Forecasted Video Usage**
-```{r,}
+## CORRELATION ANALYSIS
+\hfill\break
 
+Essentially we've analyzed data from a variety of sources, that leverage different methodologies - but all indicating that Live TV viewing is decreasing while cross-platform TV is increasing. In this section we'll examine the correlation between these different data sources for further confirmation of the trends we've observed.  
+
+For example, Hakuhodo Tokyo survey research and Nielsen Live TV ratings have a Pearson's R value of .74 - indicating a very strong positive correlation between the two sources. The data sets represent different methodologies, that are attempting to measure the same phenomenon - and both are indicating that live TV viewing is declining. The fact that they have strong correlation, serves evidence that the live TV - regardless of how it's measured is declining.  
+
+
+Additionally, we can see for the correlation stats below, when comparing ATUS computer usage to its own survey data for cross-platform TV usage (.72), and Nielsen/Pivotal Research cross-platform TV viewing estimates (.58) that there is positive correlation. In other words, computer/online usage doesn't seem to negatively impact cross-platform video viewing. 
+
+However, when we correlate ATUS cross-platform TV viewing data with Nielsen/Pivotal cross-platform estimates we actually see a negative correlation (-.23). How is that possible? From 2003-2016, the ATUS cross-platform averages a positive growth rate, but from 2008-2016 (the years that we have Nielsen data for), the trend is actually flat. In other words, from 2008-2016 the ATUS survey data for cross-platform viewing trends virtually flat but statically insignificant (.00, p = .81)[^7], while the Nielsen/Pivotal research data trends positive - explaining the divergence between the two data sets. 
+
+In the final analysis, it's been found to be statistically significant from multiple sources (albeit in different markets), that live TV viewing is decreasing. 
+
+However, regarding overall cross-platform video viewing the picture becomes a little murky with the narrative ranging from flat to slight growth depending on the years in question. 
+
+Finally, non-video computer/mobile use positively correlates with overall video viewing, and therefore doesn't negatively impact cross-platform viewing of TV programming. 
+
+\hfill\break
+<div style="margin-bottom:150px;">
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+
+cormatrix <- rbind(cor(ATUS_Compdf$Estimate,ATUS_TV_Alldf$Estimate),cor(Tokyo_videodf$Estimate[3:11],Nielsen_Livedf$Audience),cor(ATUS_TV_Alldf$Estimate[6:14],Nielsen_videodf$Audience),cor(ATUS_Compdf$Estimate[6:14],Nielsen_videodf$Audience))
+mycor <- data.frame(cormatrix)
+rownames(mycor) <- c("ATUS Computer & TV Correlation", "Hakuhodo & Nielsen Live TV Correlation","ATUS TV & Nielsen Xplatform Correlation", "ATUS Computer & Nielsen Xplatform Correlation")
+colnames(mycor)<-c("Pearson's R")
+formattable(mycor)
+```
+</div>
+
+## FIVE-YEAR FORECAST & SUMMARY
+
+### ATUS COMPUTER USAGE FORECAST
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+Pseries<-ts(ATUS_Compdf$Estimate, start=1, end = NROW(ATUS_Compdf$Estimate), frequency = 1)
+#plot(Pseries, col = "blue", lwd = 4, main = "Historical Time Series")
+
+ATUS_CompdfB<-ATUS_Compdf[c(1,3)]
+colnames(ATUS_CompdfB)[which(names(ATUS_CompdfB) == "Estimate")] <- "y"
+colnames(ATUS_CompdfB)[which(names(ATUS_CompdfB) == "Year")] <- "ds"
+ATUS_CompdfB$ds  <- as.Date(as.character(ATUS_CompdfB$ds), "%Y")
+m <- prophet(ATUS_CompdfB, yearly.seasonality = TRUE)
+#summary(m)
+future <- make_future_dataframe(m, periods = 5, freq = 'year')
+forecast <- predict(m, future)
+
+ATUS_CompforecastTS <- ts(forecast$yhat, start = c(2003, 1))
+ATUS_CompTS <- ts(ATUS_Compdf$Estimate, start = c(2003,1))
+ts.plot(ATUS_CompTS, ATUS_CompforecastTS, col = 1:2, lty = 1:2, lwd = 3:3)
+tail(forecast$yhat, 5)
+
+myforecast <- data.frame(tail(forecast$yhat, 5))
+rownames(myforecast)<-c("2017","2018","2019","2020","2021")
+colnames(myforecast)<-c("future prediction")
+myforecast$`future prediction`<-comma(myforecast$`future prediction`, digits = 2)
+formattable(myforecast)
+
+trainingy <- tail(ATUS_CompdfB$y, n=14)
+predictedy<-tail(forecast$yhat, n=14)
+
+fitmatrix <- rbind(CI(trainingy, ci = .95),CI(predictedy, ci = .95))
+myfit <- data.frame(fitmatrix)
+rownames(myfit) <- c("Actual", "Prediction")
+formattable(myfit)
 ```
 
+### ATUS CROSS-PLATFORM TV VIEWING FORECAST
 
-**Internal Video Retention Analysis**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+PseriesA<-ts(ATUS_TV_Alldf$Estimate, start=1, end = NROW(ATUS_TV_Alldf$Estimate), frequency = 1)
+#plot(Pseries, col = "blue", lwd = 4, main = "Historical Time Series")
 
-```{r}
+ATUS_TV_AlldfB<-ATUS_TV_Alldf[c(1,3)]
+colnames(ATUS_TV_AlldfB)[which(names(ATUS_TV_AlldfB) == "Estimate")] <- "y"
+colnames(ATUS_TV_AlldfB)[which(names(ATUS_TV_AlldfB) == "Year")] <- "ds"
+ATUS_TV_AlldfB$ds  <- as.Date(as.character(ATUS_TV_AlldfB$ds), "%Y")
+m1 <- prophet(ATUS_TV_AlldfB, yearly.seasonality = TRUE)
+#summary(m)
+futureA <- make_future_dataframe(m1, periods = 5, freq = 'year')
+forecastA <- predict(m1, futureA)
 
-#set_config(use_proxy(url="proxy.inbcu.com",port=8080))
-SCAuth("casenaveb:NBC Universal", "da0b832c8f5540f31ba2291266dafb72")
+ATUS_TV_AllforecastTS <- ts(forecastA$yhat, start = c(2003, 1))
+ATUS_TV_AllTS <- ts(ATUS_TV_Alldf$Estimate, start = c(2003,1))
+ts.plot(ATUS_TV_AllTS, ATUS_TV_AllforecastTS, col = 1:2, lty = 1:2, lwd = 3:3)
+tail(forecastA$yhat, 5)
+myforecastA <- data.frame(tail(forecastA$yhat, 5))
+rownames(myforecastA)<-c("2017","2018","2019","2020","2021")
+colnames(myforecastA)<-c("future prediction")
+myforecastA$`future prediction`<-comma(myforecastA$`future prediction`, digits = 2)
+formattable(myforecastA)
 
+trainingAy <- tail(ATUS_TV_AlldfB$y, n=14)
+predictedAy<-tail(forecastA$yhat, n=14)
+
+fitmatrixA <- rbind(CI(trainingAy, ci = .95),CI(predictedAy, ci = .95))
+myfitA <- data.frame(fitmatrixA)
+rownames(myfitA) <- c("Actual", "Prediction")
+formattable(myfitA)
 ```
+### NIELSEN/PIVOTAL CROSS-PLATFORM TV VIEWING FORECAST
+<div style="margin-bottom:100px;">
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-**Appendix - Data Distribution**
+Nielsen_videodfA <- Nielsen_videodf
+colnames(Nielsen_videodfA)[which(names(Nielsen_videodfA) == "Audience")] <- "y"
+colnames(Nielsen_videodfA)[which(names(Nielsen_videodfA) == "Year")] <- "ds"
+Nielsen_videodfA$ds  <- as.Date(as.character(Nielsen_videodfA$ds), "%Y")
+m2 <- prophet(Nielsen_videodfA, yearly.seasonality = TRUE)
+#summary(m)
+futureB <- make_future_dataframe(m2, periods = 5, freq = 'year')
+forecastB <- predict(m2, futureB)
 
+Nielsen_VideoforecastTS <- ts(forecastB$yhat, start = c(2008, 1))
+Nielsen_VideoTS <- ts(Nielsen_videodf$Audience, start = c(2008,1))
+ts.plot(Nielsen_VideoTS, Nielsen_VideoforecastTS, col = 1:2, lty = 1:2, lwd = 3:3)
+#tail(forecastB$yhat, 5)
+myforecastB <- data.frame(tail(forecastB$yhat, 5))
+rownames(myforecastB)<-c("2017","2018","2019","2020","2021")
+colnames(myforecastB)<-c("future prediction")
+myforecastB$`future prediction`<-comma(myforecastB$`future prediction`, digits = 0)
+formattable(myforecastB)
+
+
+trainingBy <- tail(Nielsen_videodfA$y, n=14)
+predictedBy<-tail(forecastB$yhat, n=14)
+
+fitmatrixB <- rbind(CI(trainingBy, ci = .95),CI(predictedBy, ci = .95))
+myfitB <- data.frame(fitmatrixB)
+rownames(myfitB) <- c("Actual", "Prediction")
+formattable(myfitB)
+```
+### Forecast summary table below:  
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+summary_video_forecast <- data.frame(tail(forecast$yhat, 5),tail(forecastA$yhat, 5), tail(forecastB$yhat, 5))
+rownames(summary_video_forecast) <- c("2017", "2018", "2019", "2020", "2021")
+colnames(summary_video_forecast) <- c("ATUS Online Time", "ATUS All-TV Time", "Nielsen/Pivotal (000)")
+summary_video_forecast$`ATUS Online Time`<- round(summary_video_forecast$`ATUS Online Time`, 2)
+summary_video_forecast$`ATUS All-TV Time`<- round(summary_video_forecast$`ATUS All-TV Time`, 2)
+summary_video_forecast$`Nielsen/Pivotal (000)`<-format(summary_video_forecast$`Nielsen/Pivotal (000)`, big.mark = ",", scientific = FALSE, digits = 0)
+
+formattable(summary_video_forecast)
+```
+</div>
+
+
+<div style="margin-bottom:500px;">
+### ANALYSIS & FINDINGS
+
+The primary goals of our analysis, was to answer two questions:  
+
+* Has overall video usage been increasing or decreasing  
+* Will people be spending more time with non-video activity at the expense of video usage.  
+
+The problem in answering the first question is that there's no single source of truth. Therefore, we broke our analysis into two parts - first to determine what our sources were predicting for video usage, by type (Live TV vs Cross-Platform). Once we established which sources were aimed at measuring the same phenomena, albeit with different methods the next step was to determine if they correlated together - essentially telling the same story.  
+
+As we saw in our correlation section, generally this was the case. Finally, once we determined with some statistical confidence that trends were either decreasing or increasing, the next step was to try and provide five-year forecasts for our key behaviors of interest - overall computer usage (excl. games), ATUS reporting all TV viewing and Nielsen + Pivotal Research Cross-platform TV viewing. 
+
+The ATUS survey based date reported computer usage and cross-platform TV usage trending up, but predicted means were more that one standard deviation from the observed means, limiting our confidence in the exact predictions - but not the direction. However, our predicted values from Nielsen/Pivotal research for average audience viewing of cross-platform viewing was within one standard deviation of the actual or observed values, confirming the validity of those predicted values. 
+
+In the sum, all sources point to continuing declines in live TV viewing, but continued growth when looking at cross-platform growth. It's also worth noting that the growth of cross-platform TV viewing is not negatively correlated with non-video online activity. 
+</div>
+
+
+
+
+
+
+  
+## APPENDIX - DATA DISTRIBUTION
+<div style="margin-bottom:100px;">
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 summary(ATUS_Compdf$Estimate)
@@ -139,4 +441,41 @@ qqnorm(ATUS_TV_wkdaydf$Estimate, col = "red")
 qqnorm(Nielsen_videodf$Audience, col = "black")
 qqnorm(Nielsen_Livedf$Audience, col = "yellow")
 qqnorm(Tokyo_videodf$Estimate, col = "brown")
+```
+</div>
+
+## DATA SOURCES & FOOTNOTES
+
+[^1]:[You can watch Netflix on any screen you want, but you’re probably watching it on a TV](https://www.recode.net/2018/3/7/17094610/netflix-70-percent-tv-viewing-statistics)
+
+[^2]:[Hulu Japan Launches, But Falls Flat](https://ishikawajet.wordpress.com/2011/09/02/hulu-japan-launches-but-falls-flat/)
+
+[^3]:[Netflix Japan vs Hulu Japan: Which one is the best?](https://www.kuropixel.com/netflix-japan-vs-hulu-japan/)
+
+[^4]:[Series ID: TUU10101AA01006114  
+Type of estimate: Average hours per day  
+Activity: Computer use for leisure 
+Day of week: All days  
+Age: 15 years and over ]
+
+[^5]:[Series ID: TUU10101AA01014236  
+Type of estimate: Average hours per day  
+Activity: Watching TV Day of week: All days  
+Age: 15 years and over]
+
+[^6]:[Series ID: TUU10101AA01014241  
+Type of estimate: Average hours per day  
+Activity: Watching TV  
+Day of week: Nonholiday weekdays  
+Age: 15 years and over]
+
+[^7]:[ATUS TV Viewing from 2008-2016]  
+
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow=c(3,2))
+plot(ATUS_Compdf$Estimate,ATUS_TV_Alldf$Estimate)
+plot(ATUS_TV_wkdaydf$Estimate[6:14], Nielsen_videodf$Audience)
+plot(Tokyo_videodf$Estimate[3:11], Nielsen_Livedf$Audience)
+
+summary(lm(Estimate[6:14] ~ Year[6:14], data = ATUS_TV_Alldf))
 ```
