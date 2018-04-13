@@ -107,6 +107,11 @@ The American Time Usage Survey (ATUS) is a very high-level report, that doesn't 
 Nielsen and Pivotal research have created custom average audience delivery for cross-platform TV viewing, along with traditional live ratings as well. The date range for this study is from 2008-2016. There are a total two charts in our analysis from this data set. 
 
 Finally, for the purposes of a comparative analysis, we'll look at survey data from the Hakuhodo research firm. Hakuhodo's survey also asks about TV viewing, but it is confined to live TV.
+
+Each of these research methods have strengths and weaknesses. The survey data from Bureau of Labor and Statistics is crude and imprecise, but it is the same over time and truly is A/B in scope. In other words, the survey data's imprecision is both a strength and weakness.
+
+The Nielsen + Pivotal Research projections is based on a custom calculation which is readily documented anywhere, and only spans eight years. However, it does offer aggregate counts for very specific platforms using Nielsen data. It can also further segmented, in ways that it was not for this study. 
+
 </div>
 \newpage
 
@@ -403,7 +408,7 @@ The problem in answering the first question is that there's no single source of 
 
 As we saw in our correlation section, generally this was the case. Finally, once we determined with some statistical confidence that trends were either decreasing or increasing, the next step was to try and provide five-year forecasts for our key behaviors of interest - overall computer usage (excl. games), ATUS reporting all TV viewing and Nielsen + Pivotal Research Cross-platform TV viewing. 
 
-The ATUS survey based date reported computer usage and cross-platform TV usage trending up, but predicted means were more than one standard deviation from the observed means, limiting our confidence in the exact predictions - but not the direction. However, our predicted values from Nielsen/Pivotal research for average audience viewing of cross-platform viewing was within one standard deviation of the actual or observed values, confirming the validity of those predicted values. 
+The ATUS survey based date reported computer usage and cross-platform TV usage trending up, but predicted means were more than one standard deviation from the observed means, limiting our confidence in the exact predictions - but not the direction. However, our predicted values from Nielsen/Pivotal research for average audience viewing of cross-platform viewing was within one standard deviation of the actual or observed values, confirming the validity of those predicted values. Fundamentally, the variability in the data reflects the disruption in the marketplace that makes it virtually impossible to reflect what will happen in the next 3-5 years. However, when trying to determing which direction usage is headed, up or down, the projections are useful in provding credible insight.
 
 In the sum, all sources point to continuing declines in live TV viewing, but continued growth when looking at cross-platform growth. It's also worth noting that the growth of cross-platform TV viewing is not negatively correlated with non-video online activity. 
 </div>
