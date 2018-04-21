@@ -44,37 +44,37 @@ TV_Comp_Corrdf<-read.csv(Nielsen_Live, header = TRUE, sep = ",")
 predictcomp<- predict(lm(Estimate ~ Year, data = ATUS_Compdf))
 
 ATUSCompplot <- ggplot(ATUS_Compdf, aes(x = Year, y = Estimate)) + geom_point(color="blue")+scale_x_continuous(breaks = ATUS_Compdf$Year)+ 
-  geom_line(aes(y = predictcomp))+ylim(0,.5)+ggtitle("ATUS - Series Title: Avg hrs per day - Computer use for leisure")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.5)
+  geom_line(aes(y = predictcomp))+ylim(0,.5)+ggtitle("ATUS - Series Title: Avg hrs per day - Computer use for leisure")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=5, vjust=-.5)
 
 predictvideo<- predict(lm(Estimate ~ Year, data = ATUS_TV_Alldf))
 
 ATUSTVAllplot<- ggplot(ATUS_TV_Alldf, aes(x = Year, y = Estimate)) + geom_point(color="green")+scale_x_continuous(breaks = ATUS_TV_Alldf$Year)+ 
-  geom_line(aes(y = predictvideo))+ylim(0,5)+ggtitle("ATUS - Series Title: Avg hrs per day - Watching TV ")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+  geom_line(aes(y = predictvideo))+ylim(0,5)+ggtitle("ATUS - Series Title: Avg hrs per day - Watching TV ")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=5, vjust=-.75)
 
 predictvideowkdy<- predict(lm(Estimate ~ Year, data = ATUS_TV_wkdaydf))
 
 
 
 ATUSTVwkplot <- ggplot(ATUS_TV_wkdaydf, aes(x = Year, y = Estimate)) + geom_point(color="red")+scale_x_continuous(breaks = ATUS_TV_wkdaydf$Year)+ 
-  geom_line(aes(y = predictvideowkdy))+ylim(0,5)+ggtitle("ATUS -Series Title: Avg hrs per day - Watching TV, Weekdays")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+  geom_line(aes(y = predictvideowkdy))+ylim(0,5)+ggtitle("ATUS -Series Title: Avg hrs per day - Watching TV, Weekdays")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=5, vjust=-.75)
 
 predictnielsen<- predict(lm(Audience ~ Year, data = Nielsen_videodf))
 
-NielsenAllplot <- ggplot(Nielsen_videodf, aes(x = Year, y = Audience)) + geom_point(color="black")+scale_x_continuous(breaks = Nielsen_videodf$Year)+ geom_line(aes(y = predictnielsen))+ylim(0,1000000)+ggtitle("Nielsen + PivotalAvg Audience X-Platform TV & Online Estimate")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience, digits=0)), position = position_dodge(.2), size=3, vjust=-.75)
+NielsenAllplot <- ggplot(Nielsen_videodf, aes(x = Year, y = (Audience/1000))) + geom_point(color="black")+scale_x_continuous(breaks = Nielsen_videodf$Year)+ geom_line(aes(y = predictnielsen/1000))+ylim(0,1000)+ggtitle("Pivotal Summed Annual Hours (Bn) X-Platform TV")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma((Audience/1000), digits=0)), position = position_dodge(.2), size=5, vjust=-.75)
 
 predictnielsenlive<- predict(lm(Audience ~ Year, data = Nielsen_Livedf))
 
-NielsenLivePlot <- ggplot(Nielsen_Livedf, aes(x = Year, y = Audience)) + geom_point(color="yellow")+scale_x_continuous(breaks = Nielsen_Livedf$Year)+ 
-  geom_line(aes(y = predictnielsenlive))+ylim(0,1000000)+ggtitle("Nielsen + Pivotal Avg Audience Live TV & Online Estimate")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma(Audience,digits=0)), position = position_dodge(.2), size=3, vjust=-.75)
+NielsenLivePlot <- ggplot(Nielsen_Livedf, aes(x = Year, y = (Audience/1000))) + geom_point(color="yellow")+scale_x_continuous(breaks = Nielsen_Livedf$Year)+ 
+  geom_line(aes(y = predictnielsenlive/1000))+ylim(0,1000)+ggtitle("Pivotal Summed Annual Hours (Bn) Live TV")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=comma((Audience/1000),digits=0)), position = position_dodge(.2), size=5, vjust=-.75)
 
 predicttokyo<- predict(lm(Estimate ~ Year, data = Tokyo_videodf))
 
 TokyoVideoplot <- ggplot(Tokyo_videodf, aes(x = Year, y = Estimate)) + geom_point(color="brown")+scale_x_continuous(breaks = Tokyo_videodf$Year)+ 
-  geom_line(aes(y = predicttokyo))+ylim(0,5)+ggtitle("Hakuhodo - Tokyo Avg Daily Hours TV")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=3, vjust=-.75)
+  geom_line(aes(y = predicttokyo))+ylim(0,5)+ggtitle("Hakuhodo - Tokyo Avg Daily Hours TV")+theme(plot.title = element_text(color="Navy", face="bold", size = 14, hjust = 0))+geom_text(aes(label=round(Estimate, digits = 2)), position = position_dodge(.2), size=5, vjust=-.75)
 
 cormatrix <- rbind(cor(ATUS_Compdf$Estimate,ATUS_TV_Alldf$Estimate),cor(Tokyo_videodf$Estimate[3:11],Nielsen_Livedf$Audience),cor(ATUS_TV_Alldf$Estimate[6:14],Nielsen_videodf$Audience),cor(ATUS_Compdf$Estimate[6:14],Nielsen_videodf$Audience))
 mycor <- data.frame(cormatrix)
-rownames(mycor) <- c("ATUS Computer & TV Correlation", "Hakuhodo & Nielsen Live TV Correlation","ATUS TV & Nielsen Xplatform Correlation", "ATUS Computer & Nielsen Xplatform Correlation")
+rownames(mycor) <- c("ATUS Computer & TV Correlation", "Hakuhodo & Pivotal Live TV Correlation","ATUS TV & Pivotal Xplatform Correlation", "ATUS Computer & Pivotal Xplatform Correlation")
 colnames(mycor)<-c("Pearson's R")
 formattable(mycor)
 
@@ -170,18 +170,18 @@ formattable(myfitB)
 
 summary_video_forecast <- data.frame(tail(forecast$yhat, 5),tail(forecastA$yhat, 5), tail(forecastB$yhat, 5))
 rownames(summary_video_forecast) <- c("2017", "2018", "2019", "2020", "2021")
-colnames(summary_video_forecast) <- c("ATUS Online Time", "ATUS All-TV Time", "Nielsen/Pivotal (000)")
+colnames(summary_video_forecast) <- c("ATUS Online Time", "ATUS All-TV Time", "Pivotal Total Hours (Bn)")
 summary_video_forecast$`ATUS Online Time`<- round(summary_video_forecast$`ATUS Online Time`, 2)
 summary_video_forecast$`ATUS All-TV Time`<- round(summary_video_forecast$`ATUS All-TV Time`, 2)
-summary_video_forecast$`Nielsen/Pivotal (000)`<-format(summary_video_forecast$`Nielsen/Pivotal (000)`, big.mark = ",", scientific = FALSE, digits = 0)
+summary_video_forecast$`Pivotal Total Hours (Bn)`<-format(summary_video_forecast$`Pivotal Total Hours (Bn)`/1000, big.mark = ",", scientific = FALSE, digits = 0)
 
 formattable(summary_video_forecast)
 
 #app choices
 
-mychart <- list(ATUS_Online=ATUSCompplot,ATUS_TVAll=ATUSTVAllplot,ATUS_TVWkDy=ATUSTVwkplot,Nielsen_AllVideo=NielsenAllplot,Nielsen_LiveTV=NielsenLivePlot,Tokyo=TokyoVideoplot)
+mychart <- list(ATUS_Online=ATUSCompplot,ATUS_TVAll=ATUSTVAllplot,ATUS_TVWkDy=ATUSTVwkplot,Pivotal_AllVideo=NielsenAllplot,Pivotal_LiveTV=NielsenLivePlot,Tokyo=TokyoVideoplot)
 #mvideopplot<-mychart[1]
-mychoices <- c("ATUS_Online","ATUS_TVAll","ATUS_TVWkDy","Nielsen_AllVideo","Nielsen_LiveTV","Tokyo")
+mychoices <- c("ATUS_Online","ATUS_TVAll","ATUS_TVWkDy","Pivotal_AllVideo","Pivotal_LiveTV","Tokyo")
 
 ui = fluidPage(title="Video Quick Look",
   titlePanel(p("Quick Look Video - American Time Survey, Nielsen & Hakuhodo", style = "color:#008000")),
@@ -208,14 +208,14 @@ server = function(input,output) {
   
   output$chart <-renderPlot({
     
-    mychart <- list(ATUS_Online=ATUSCompplot,ATUS_TVAll=ATUSTVAllplot,ATUS_TVWkDy=ATUSTVwkplot,Nielsen_AllVideo=NielsenAllplot,Nielsen_LiveTV=NielsenLivePlot,Tokyo=TokyoVideoplot)
+    mychart <- list(ATUS_Online=ATUSCompplot,ATUS_TVAll=ATUSTVAllplot,ATUS_TVWkDy=ATUSTVwkplot,Pivotal_AllVideo=NielsenAllplot,Pivotal_LiveTV=NielsenLivePlot,Tokyo=TokyoVideoplot)
     mychart[(input$chartID)]
     
   })
   
   output$cortable <-renderTable({
     cormatrix <- rbind(cor(ATUS_Compdf$Estimate,ATUS_TV_Alldf$Estimate),cor(Tokyo_videodf$Estimate[3:11],Nielsen_Livedf$Audience),cor(ATUS_TV_Alldf$Estimate[6:14],Nielsen_videodf$Audience),cor(ATUS_Compdf$Estimate[6:14],Nielsen_videodf$Audience))
-    videodata <- c("ATUS Computer & TV Correlation", "Hakuhodo & Nielsen Live TV Correlation","ATUS TV & Nielsen Xplatform Correlation", "ATUS Computer & Nielsen Xplatform Correlation")
+    videodata <- c("ATUS Computer & TV Correlation", "Hakuhodo & Pivotal Live TV Correlation","ATUS TV & Pivotal Xplatform Correlation", "ATUS Computer & Pivotal Xplatform Correlation")
     mycor <- data.frame(videodata,cormatrix)
     colnames(mycor)<-c("Data","Pearson's R")
     mycor
@@ -225,10 +225,10 @@ server = function(input,output) {
     summary_video_forecast <- data.frame(tail(forecast$yhat, 5),tail(forecastA$yhat, 5), tail(forecastB$yhat, 5))
     future_years <- c("2017", "2018", "2019", "2020", "2021")
     summary_video_forecast <- data.frame(future_years, summary_video_forecast)
-    colnames(summary_video_forecast) <- c("Years","ATUS Online Time", "ATUS All-TV Time", "Nielsen/Pivotal (000)")
+    colnames(summary_video_forecast) <- c("Years","ATUS Online Time", "ATUS All-TV Time", "Pivotal Total Hours (Bn)")
     summary_video_forecast$`ATUS Online Time`<- round(summary_video_forecast$`ATUS Online Time`, 2)
     summary_video_forecast$`ATUS All-TV Time`<- round(summary_video_forecast$`ATUS All-TV Time`, 2)
-    summary_video_forecast$`Nielsen/Pivotal (000)`<-format(summary_video_forecast$`Nielsen/Pivotal (000)`, big.mark = ",", scientific = FALSE, digits = 0)
+    summary_video_forecast$`Pivotal Total Hours (Bn)`<-format(summary_video_forecast$`Pivotal Total Hours (Bn)`/1000, big.mark = ",", scientific = FALSE, digits = 0)
     summary_video_forecast
   })
   
